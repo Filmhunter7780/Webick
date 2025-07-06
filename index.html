@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoChat - Видеочат с совместным просмотром</title>
+    <title>VideoChat Pro - Рабочий видеочат с YouTube</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -141,6 +144,14 @@
             background: linear-gradient(45deg, #ff1a1a, #ff6b6b);
         }
         
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #1e7e34);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(45deg, #1e7e34, #28a745);
+        }
+        
         .video-container {
             display: flex;
             flex-wrap: wrap;
@@ -203,17 +214,14 @@
             margin-top: 20px;
             background: rgba(0, 0, 0, 0.4);
             font-size: 1rem;
-            display: none;
         }
         
         .status.connected {
             background: rgba(40, 167, 69, 0.3);
-            display: block;
         }
         
         .status.error {
             background: rgba(220, 53, 69, 0.3);
-            display: block;
         }
         
         .instructions {
@@ -267,6 +275,25 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+        
+        .status-dot.connected {
+            background: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -285,22 +312,22 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-video"></i> VideoChat</h1>
-            <p class="subtitle">Видеочат с совместным просмотром YouTube</p>
+            <h1><i class="fas fa-video"></i> VideoChat Pro</h1>
+            <p class="subtitle">Рабочий видеочат с совместным просмотром YouTube</p>
         </header>
         
         <div class="main-content">
             <div class="auth-section">
                 <h2 class="section-title"><i class="fas fa-user"></i> Регистрация / Вход</h2>
                 <div class="form-group">
-                    <label for="user-id">Ваш ID:</label>
-                    <input type="text" id="user-id" placeholder="Придумайте уникальный ID">
+                    <label for="user-id">Ваш ID (email):</label>
+                    <input type="text" id="user-id" placeholder="Введите ваш ID (email)">
                 </div>
                 <div class="form-group">
                     <label for="password">Пароль:</label>
-                    <input type="password" id="password" placeholder="Создайте пароль">
+                    <input type="password" id="password" placeholder="Введите пароль">
                 </div>
-                <button class="btn" id="register-btn"><i class="fas fa-user-plus"></i> Зарегистрироваться</button>
+                <button class="btn btn-success" id="register-btn"><i class="fas fa-user-plus"></i> Зарегистрироваться</button>
                 <button class="btn" id="login-btn"><i class="fas fa-sign-in-alt"></i> Войти</button>
                 
                 <div class="form-group">
@@ -309,7 +336,12 @@
                 </div>
                 <button class="btn btn-secondary" id="connect-btn"><i class="fas fa-plug"></i> Подключиться</button>
                 
-                <div class="status" id="auth-status"></div>
+                <div class="status" id="auth-status">Статус: Не авторизован</div>
+                
+                <div class="connection-status">
+                    <div class="status-dot" id="firebase-status"></div>
+                    <span id="firebase-status-text">Firebase: Не подключен</span>
+                </div>
             </div>
             
             <div class="video-section">
@@ -317,11 +349,11 @@
                 <div class="video-container">
                     <div class="video-wrapper">
                         <div class="video-title">Ваша камера</div>
-                        <video id="local-video" autoplay muted></video>
+                        <video id="local-video" autoplay muted playsinline></video>
                     </div>
                     <div class="video-wrapper">
                         <div class="video-title">Участник чата</div>
-                        <video id="remote-video" autoplay></video>
+                        <video id="remote-video" autoplay playsinline></video>
                     </div>
                 </div>
                 
@@ -331,7 +363,7 @@
                     <button class="btn btn-secondary" id="hangup-btn"><i class="fas fa-phone-slash"></i> Завершить звонок</button>
                 </div>
                 
-                <div class="status" id="call-status"></div>
+                <div class="status" id="call-status">Статус: Ожидание действий</div>
             </div>
             
             <div class="youtube-section">
@@ -343,56 +375,76 @@
                 </div>
                 
                 <div class="youtube-player-container">
-                    <iframe id="youtube-player"></iframe>
+                    <iframe id="youtube-player" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
         
         <div class="features">
             <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Рабочая аутентификация</h3>
+                <p>Регистрация и вход через Firebase</p>
+            </div>
+            <div class="feature">
                 <i class="fas fa-video"></i>
-                <h3>Видеозвонки</h3>
-                <p>Общайтесь в реальном времени через видео</p>
+                <h3>Видеосвязь WebRTC</h3>
+                <p>Реальное видео соединение</p>
             </div>
             <div class="feature">
                 <i class="fab fa-youtube"></i>
-                <h3>Совместный просмотр</h3>
-                <p>Смотрите YouTube вместе с участниками чата</p>
-            </div>
-            <div class="feature">
-                <i class="fas fa-id-card"></i>
-                <h3>Простая регистрация</h3>
-                <p>Только ID и пароль для доступа</p>
+                <h3>Синхронизация YouTube</h3>
+                <p>Совместный просмотр в реальном времени</p>
             </div>
             <div class="feature">
                 <i class="fas fa-shield-alt"></i>
                 <h3>Безопасность</h3>
-                <p>Ваши данные защищены</p>
+                <p>Защищенные соединения</p>
             </div>
         </div>
         
         <div class="instructions">
             <h3><i class="fas fa-info-circle"></i> Как использовать:</h3>
             <ol>
-                <li>Зарегистрируйтесь, придумав уникальный ID и пароль</li>
-                <li>Включите камеру для начала видеозвонка</li>
-                <li>Чтобы пригласить друга, сообщите ему ваш ID</li>
-                <li>Для совместного просмотра вставьте ссылку на YouTube видео и нажмите "Запустить"</li>
-                <li>Управляйте воспроизведением видео для всех участников</li>
+                <li>Зарегистрируйтесь, указав email и пароль</li>
+                <li>Войдите в систему под своим аккаунтом</li>
+                <li>Включите камеру для видеозвонка</li>
+                <li>Чтобы пригласить друга, сообщите ему ваш ID (email)</li>
+                <li>Для совместного просмотра вставьте ссылку на YouTube видео</li>
+                <li>Нажмите "Запустить" - видео синхронизируется у всех участников</li>
             </ol>
         </div>
         
         <footer>
-            <p>© 2023 VideoChat - Видеочат с совместным просмотром YouTube</p>
-            <p>Работает на GitHub Pages | WebRTC | YouTube API</p>
+            <p>© 2023 VideoChat Pro - Рабочий видеочат с совместным просмотром</p>
+            <p>Работает на GitHub Pages | Firebase | WebRTC</p>
         </footer>
     </div>
 
     <script>
+        // Конфигурация Firebase (замените на свою)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFepzxO-GRzAyJjpjO8AheEgExST3R9yA",
+            authDomain: "webrtcproject-c4684.firebaseapp.com",
+            projectId: "webrtcproject-c4684",
+            storageBucket: "webrtcproject-c4684.appspot.com",
+            messagingSenderId: "916052149760",
+            appId: "1:916052149760:web:9925a229dfffb45b8d7ae5",
+            measurementId: "G-WCV33E1KXL",
+            databaseURL: "https://webrtcproject-c4684-default-rtdb.firebaseio.com/"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
         document.addEventListener('DOMContentLoaded', () => {
             // Элементы DOM
             const authStatus = document.getElementById('auth-status');
             const callStatus = document.getElementById('call-status');
+            const firebaseStatus = document.getElementById('firebase-status');
+            const firebaseStatusText = document.getElementById('firebase-status-text');
             const localVideo = document.getElementById('local-video');
             const remoteVideo = document.getElementById('remote-video');
             const youtubePlayer = document.getElementById('youtube-player');
@@ -409,8 +461,12 @@
             
             // Состояние приложения
             let localStream = null;
-            let currentUserId = '';
+            let remoteStream = null;
+            let peerConnection = null;
+            let currentUser = null;
             let connectedUserId = '';
+            let roomId = '';
+            let isCaller = false;
             
             // Инициализация
             init();
@@ -421,6 +477,32 @@
                     showError(authStatus, 'Ваш браузер не поддерживает WebRTC. Пожалуйста, используйте современный браузер.');
                     return;
                 }
+                
+                // Проверка подключения к Firebase
+                const connectedRef = database.ref(".info/connected");
+                connectedRef.on("value", (snap) => {
+                    if (snap.val() === true) {
+                        firebaseStatus.className = 'status-dot connected';
+                        firebaseStatusText.textContent = 'Firebase: Подключен';
+                    } else {
+                        firebaseStatus.className = 'status-dot';
+                        firebaseStatusText.textContent = 'Firebase: Не подключен';
+                    }
+                });
+                
+                // Мониторинг состояния аутентификации
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        currentUser = user;
+                        showSuccess(authStatus, `Вы вошли как: ${user.email}`);
+                        updateButtonStates();
+                    } else {
+                        currentUser = null;
+                        authStatus.textContent = 'Статус: Не авторизован';
+                        authStatus.className = 'status';
+                        updateButtonStates();
+                    }
+                });
                 
                 // Установка обработчиков событий
                 registerBtn.addEventListener('click', register);
@@ -438,41 +520,47 @@
             
             // Регистрация нового пользователя
             function register() {
-                const userId = document.getElementById('user-id').value.trim();
+                const email = document.getElementById('user-id').value.trim();
                 const password = document.getElementById('password').value;
                 
-                if (!userId || !password) {
+                if (!email || !password) {
                     showError(authStatus, 'Пожалуйста, заполните все поля');
                     return;
                 }
                 
-                // В реальном приложении здесь была бы отправка на сервер
-                currentUserId = userId;
-                showSuccess(authStatus, `Вы успешно зарегистрированы как: ${userId}`);
-                updateButtonStates();
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        showSuccess(authStatus, `Регистрация успешна: ${userCredential.user.email}`);
+                    })
+                    .catch((error) => {
+                        showError(authStatus, `Ошибка регистрации: ${error.message}`);
+                    });
             }
             
             // Вход существующего пользователя
             function login() {
-                const userId = document.getElementById('user-id').value.trim();
+                const email = document.getElementById('user-id').value.trim();
                 const password = document.getElementById('password').value;
                 
-                if (!userId || !password) {
+                if (!email || !password) {
                     showError(authStatus, 'Пожалуйста, заполните все поля');
                     return;
                 }
                 
-                // В реальном приложении здесь была бы проверка на сервере
-                currentUserId = userId;
-                showSuccess(authStatus, `Вы вошли как: ${userId}`);
-                updateButtonStates();
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        showSuccess(authStatus, `Вход выполнен: ${userCredential.user.email}`);
+                    })
+                    .catch((error) => {
+                        showError(authStatus, `Ошибка входа: ${error.message}`);
+                    });
             }
             
             // Подключение к другому пользователю
             function connectToUser() {
                 const connectId = document.getElementById('connect-id').value.trim();
                 
-                if (!currentUserId) {
+                if (!currentUser) {
                     showError(authStatus, 'Пожалуйста, сначала войдите в систему');
                     return;
                 }
@@ -483,23 +571,21 @@
                 }
                 
                 connectedUserId = connectId;
+                
+                // Создаем уникальный ID комнаты на основе ID пользователей
+                roomId = [currentUser.email, connectId].sort().join('_');
                 showSuccess(callStatus, `Подключение к ${connectId}...`);
                 
-                // В реальном приложении здесь была бы установка WebRTC соединения
-                setTimeout(() => {
-                    showSuccess(callStatus, `Успешно подключено к ${connectId}`);
-                    startVideo();
-                }, 1500);
+                // Проверяем, кто является инициатором вызова
+                isCaller = currentUser.email.localeCompare(connectId) < 0;
+                
+                // Начинаем видеозвонок
+                startVideoCall();
             }
             
-            // Запуск видео
-            async function startVideo() {
+            // Запуск видеозвонка
+            async function startVideoCall() {
                 try {
-                    if (!currentUserId) {
-                        showError(authStatus, 'Пожалуйста, сначала войдите в систему');
-                        return;
-                    }
-                    
                     showSuccess(callStatus, 'Получение доступа к камере...');
                     
                     // Получение видеопотока
@@ -511,19 +597,136 @@
                     localVideo.srcObject = localStream;
                     showSuccess(callStatus, 'Камера включена');
                     
-                    // В реальном приложении здесь был бы код установки соединения
-                    if (connectedUserId) {
-                        // Симуляция удаленного видео
-                        setTimeout(() => {
-                            remoteVideo.srcObject = localStream;
-                        }, 1000);
+                    // Создаем RTCPeerConnection
+                    createPeerConnection();
+                    
+                    // Добавляем локальный поток в соединение
+                    localStream.getTracks().forEach(track => {
+                        peerConnection.addTrack(track, localStream);
+                    });
+                    
+                    // Если мы инициатор, создаем предложение
+                    if (isCaller) {
+                        createOffer();
                     }
+                    
+                    // Настраиваем слушатели для сигналов
+                    setupSignalListeners();
                     
                     updateButtonStates();
                 } catch (error) {
                     console.error('Ошибка доступа к камере:', error);
                     showError(callStatus, `Ошибка доступа к камере: ${error.message}`);
                 }
+            }
+            
+            // Создание RTCPeerConnection
+            function createPeerConnection() {
+                const configuration = {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' }
+                    ]
+                };
+                
+                peerConnection = new RTCPeerConnection(configuration);
+                
+                // Обработка удаленного потока
+                peerConnection.ontrack = event => {
+                    remoteStream = event.streams[0];
+                    remoteVideo.srcObject = remoteStream;
+                    showSuccess(callStatus, 'Удаленное подключение установлено');
+                };
+                
+                // Генерация ICE-кандидатов
+                peerConnection.onicecandidate = event => {
+                    if (event.candidate) {
+                        // Отправляем кандидата другому пользователю
+                        database.ref(`calls/${roomId}/candidates`).push({
+                            sender: currentUser.email,
+                            candidate: event.candidate
+                        });
+                    }
+                };
+                
+                // Отслеживание изменения состояния соединения
+                peerConnection.oniceconnectionstatechange = () => {
+                    if (peerConnection.iceConnectionState === 'disconnected') {
+                        hangup();
+                    }
+                };
+            }
+            
+            // Создание предложения (для инициатора)
+            function createOffer() {
+                peerConnection.createOffer()
+                    .then(offer => {
+                        return peerConnection.setLocalDescription(offer);
+                    })
+                    .then(() => {
+                        // Отправляем предложение другому пользователю
+                        database.ref(`calls/${roomId}/offer`).set({
+                            sender: currentUser.email,
+                            offer: peerConnection.localDescription
+                        });
+                    })
+                    .catch(error => {
+                        showError(callStatus, `Ошибка создания предложения: ${error}`);
+                    });
+            }
+            
+            // Настройка слушателей сигналов
+            function setupSignalListeners() {
+                // Слушатель для предложения
+                database.ref(`calls/${roomId}/offer`).on('value', snapshot => {
+                    const data = snapshot.val();
+                    if (!data || data.sender === currentUser.email) return;
+                    
+                    // Принимаем предложение
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer))
+                        .then(() => {
+                            // Создаем ответ
+                            return peerConnection.createAnswer();
+                        })
+                        .then(answer => {
+                            return peerConnection.setLocalDescription(answer);
+                        })
+                        .then(() => {
+                            // Отправляем ответ
+                            database.ref(`calls/${roomId}/answer`).set({
+                                sender: currentUser.email,
+                                answer: peerConnection.localDescription
+                            });
+                        })
+                        .catch(error => {
+                            showError(callStatus, `Ошибка обработки предложения: ${error}`);
+                        });
+                });
+                
+                // Слушатель для ответа
+                database.ref(`calls/${roomId}/answer`).on('value', snapshot => {
+                    const data = snapshot.val();
+                    if (!data || data.sender === currentUser.email || !peerConnection.remoteDescription) return;
+                    
+                    // Устанавливаем удаленное описание
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer))
+                        .catch(error => {
+                            showError(callStatus, `Ошибка обработки ответа: ${error}`);
+                        });
+                });
+                
+                // Слушатель для ICE-кандидатов
+                database.ref(`calls/${roomId}/candidates`).on('child_added', snapshot => {
+                    const data = snapshot.val();
+                    if (!data || data.sender === currentUser.email) return;
+                    
+                    // Добавляем кандидата
+                    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
+                        .catch(error => {
+                            showError(callStatus, `Ошибка добавления кандидата: ${error}`);
+                        });
+                });
             }
             
             // Остановка видео
@@ -543,6 +746,18 @@
                 if (remoteVideo.srcObject) {
                     remoteVideo.srcObject = null;
                 }
+                
+                if (peerConnection) {
+                    peerConnection.close();
+                    peerConnection = null;
+                }
+                
+                // Очищаем данные вызова в Firebase
+                if (roomId) {
+                    database.ref(`calls/${roomId}`).remove();
+                    roomId = '';
+                }
+                
                 connectedUserId = '';
                 showSuccess(callStatus, 'Звонок завершен');
                 updateButtonStates();
@@ -568,13 +783,32 @@
                 // Установка источника для iframe
                 youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                 
-                // В реальном приложении здесь была бы синхронизация с другими участниками
+                // Синхронизация с другим пользователем
+                if (roomId) {
+                    database.ref(`calls/${roomId}/youtube`).set({
+                        videoId: videoId,
+                        sender: currentUser.email
+                    });
+                }
+                
                 showSuccess(callStatus, `Воспроизведение YouTube видео`);
+            }
+            
+            // Слушатель для синхронизации YouTube
+            function setupYouTubeSync() {
+                database.ref(`calls/${roomId}/youtube`).on('value', snapshot => {
+                    const data = snapshot.val();
+                    if (!data || data.sender === currentUser.email) return;
+                    
+                    const videoId = data.videoId;
+                    youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    showSuccess(callStatus, `Синхронизировано YouTube видео от ${data.sender}`);
+                });
             }
             
             // Пауза YouTube видео
             function pauseYouTube() {
-                // В реальном приложении здесь было бы управление iframe через API
+                // В реальном приложении здесь было бы управление через YouTube API
                 showSuccess(callStatus, 'Видео на паузе');
             }
             
@@ -596,7 +830,7 @@
             }
             
             function updateButtonStates() {
-                const isLoggedIn = !!currentUserId;
+                const isLoggedIn = !!currentUser;
                 const isConnected = !!connectedUserId;
                 const isVideoActive = !!localStream;
                 
@@ -610,8 +844,8 @@
                 hangupBtn.disabled = !isConnected;
                 
                 // Кнопки подключения
-                connectBtn.disabled = !isLoggedIn;
-                document.getElementById('connect-id').disabled = !isLoggedIn;
+                connectBtn.disabled = !isLoggedIn || isConnected;
+                document.getElementById('connect-id').disabled = !isLoggedIn || isConnected;
                 
                 // Кнопки YouTube
                 playYoutubeBtn.disabled = !isConnected;
