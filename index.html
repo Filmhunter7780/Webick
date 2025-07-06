@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoChat Pro - Рабочий видеочат с YouTube</title>
+    <title>VideoChat Pro - Исправлено отображение видео</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,7 +14,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #1a2a6c);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
@@ -33,18 +33,20 @@
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
+            border: 1px solid #3498db;
         }
         
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            color: #2ecc71;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
         }
         
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.9;
+            margin-top: 10px;
         }
         
         .main-content {
@@ -55,11 +57,12 @@
         }
         
         .auth-section, .video-section, .youtube-section {
-            background: rgba(20, 20, 40, 0.7);
+            background: rgba(30, 30, 50, 0.8);
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
+            border: 1px solid #2980b9;
         }
         
         .auth-section {
@@ -80,8 +83,8 @@
             font-size: 1.5rem;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #4a9eff;
-            color: #4a9eff;
+            border-bottom: 2px solid #3498db;
+            color: #3498db;
         }
         
         .form-group {
@@ -92,14 +95,15 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: #3498db;
         }
         
         input {
             width: 100%;
             padding: 12px 15px;
             border-radius: 8px;
-            border: 2px solid #4a9eff;
-            background: rgba(10, 10, 30, 0.7);
+            border: 2px solid #3498db;
+            background: rgba(10, 20, 40, 0.6);
             color: #fff;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -107,14 +111,14 @@
         
         input:focus {
             outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            border-color: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
         }
         
         .btn {
             display: inline-block;
             padding: 12px 25px;
-            background: linear-gradient(45deg, #4a9eff, #1a75ff);
+            background: linear-gradient(45deg, #3498db, #2980b9);
             color: white;
             border: none;
             border-radius: 8px;
@@ -128,25 +132,25 @@
         }
         
         .btn:hover {
-            background: linear-gradient(45deg, #1a75ff, #4a9eff);
+            background: linear-gradient(45deg, #2980b9, #3498db);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         
         .btn-secondary {
-            background: linear-gradient(45deg, #ff6b6b, #ff1a1a);
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
         }
         
         .btn-secondary:hover {
-            background: linear-gradient(45deg, #ff1a1a, #ff6b6b);
+            background: linear-gradient(45deg, #c0392b, #e74c3c);
         }
         
         .btn-success {
-            background: linear-gradient(45deg, #28a745, #1e7e34);
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
         }
         
         .btn-success:hover {
-            background: linear-gradient(45deg, #1e7e34, #28a745);
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
         }
         
         .video-container {
@@ -164,6 +168,7 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid #34495e;
         }
         
         .video-title {
@@ -171,12 +176,25 @@
             padding: 10px;
             text-align: center;
             font-weight: 600;
+            color: #3498db;
         }
         
         video {
             width: 100%;
+            height: 240px;
             display: block;
             background: #000;
+            object-fit: cover;
+        }
+        
+        .no-video {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 240px;
+            background: #1c1c2e;
+            color: #7f8c8d;
+            font-size: 1.2rem;
         }
         
         .youtube-controls {
@@ -194,6 +212,7 @@
             padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
             position: relative;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid #34495e;
         }
         
         #youtube-player {
@@ -214,81 +233,65 @@
         }
         
         .status.connected {
-            background: rgba(40, 167, 69, 0.3);
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #27ae60;
         }
         
         .status.error {
-            background: rgba(220, 53, 69, 0.3);
+            background: rgba(231, 76, 60, 0.3);
+            border: 1px solid #c0392b;
         }
         
-        .instructions {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-        }
-        
-        .instructions h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-        }
-        
-        .instructions ol {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        
-        .features {
+        .connection-diagram {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .feature {
-            flex: 1;
-            min-width: 200px;
-            background: rgba(74, 158, 255, 0.2);
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
             padding: 15px;
+            background: rgba(30, 40, 60, 0.6);
             border-radius: 10px;
+        }
+        
+        .connection-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
+            width: 100px;
         }
         
-        .feature i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #ffd700;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .connection-status {
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
         }
         
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #6c757d;
+        .step-icon.active {
+            background: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
         }
         
-        .status-dot.connected {
-            background: #28a745;
-            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+        .step-line {
+            flex-grow: 1;
+            height: 4px;
+            background: #3498db;
+            margin: 0 10px;
+            position: relative;
+            top: 25px;
+        }
+        
+        .step-line.active {
+            background: #2ecc71;
+        }
+        
+        .step-text {
+            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
@@ -298,6 +301,17 @@
             
             .video-container {
                 flex-direction: column;
+            }
+            
+            .connection-diagram {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step-line {
+                width: 4px;
+                height: 40px;
+                margin: 10px 0;
             }
             
             h1 {
@@ -310,7 +324,7 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-video"></i> VideoChat Pro</h1>
-            <p class="subtitle">Рабочий видеочат с совместным просмотром YouTube</p>
+            <p class="subtitle">Исправлено отображение видео между участниками</p>
         </header>
         
         <div class="main-content">
@@ -318,7 +332,7 @@
                 <h2 class="section-title"><i class="fas fa-user"></i> Регистрация / Вход</h2>
                 <div class="form-group">
                     <label for="user-id">Ваш ID (email):</label>
-                    <input type="text" id="user-id" placeholder="Введите ваш ID (email)">
+                    <input type="text" id="user-id" placeholder="Введите ваш email">
                 </div>
                 <div class="form-group">
                     <label for="password">Пароль:</label>
@@ -329,28 +343,48 @@
                 
                 <div class="form-group">
                     <label for="connect-id">Подключиться к ID:</label>
-                    <input type="text" id="connect-id" placeholder="Введите ID для подключения">
+                    <input type="text" id="connect-id" placeholder="Введите ID собеседника">
                 </div>
                 <button class="btn btn-secondary" id="connect-btn"><i class="fas fa-plug"></i> Подключиться</button>
                 
                 <div class="status" id="auth-status">Статус: Не авторизован</div>
-                
-                <div class="connection-status">
-                    <div class="status-dot" id="firebase-status"></div>
-                    <span id="firebase-status-text">Firebase: Подключен</span>
-                </div>
             </div>
             
             <div class="video-section">
                 <h2 class="section-title"><i class="fas fa-users"></i> Видеочат</h2>
+                
+                <div class="connection-diagram">
+                    <div class="connection-step">
+                        <div class="step-icon" id="step1"><i class="fas fa-signal"></i></div>
+                        <div class="step-text">Сигнализация</div>
+                    </div>
+                    <div class="step-line" id="line1"></div>
+                    <div class="connection-step">
+                        <div class="step-icon" id="step2"><i class="fas fa-handshake"></i></div>
+                        <div class="step-text">Согласование</div>
+                    </div>
+                    <div class="step-line" id="line2"></div>
+                    <div class="connection-step">
+                        <div class="step-icon" id="step3"><i class="fas fa-network-wired"></i></div>
+                        <div class="step-text">Соединение</div>
+                    </div>
+                    <div class="step-line" id="line3"></div>
+                    <div class="connection-step">
+                        <div class="step-icon" id="step4"><i class="fas fa-video"></i></div>
+                        <div class="step-text">Видео</div>
+                    </div>
+                </div>
+                
                 <div class="video-container">
                     <div class="video-wrapper">
-                        <div class="video-title">Ваша камера</div>
+                        <div class="video-title"><i class="fas fa-user"></i> Ваша камера</div>
                         <video id="local-video" autoplay muted playsinline></video>
+                        <div class="no-video" id="local-no-video">Камера не активирована</div>
                     </div>
                     <div class="video-wrapper">
-                        <div class="video-title">Участник чата</div>
+                        <div class="video-title"><i class="fas fa-user-friends"></i> Участник чата</div>
                         <video id="remote-video" autoplay playsinline></video>
+                        <div class="no-video" id="remote-no-video">Ожидание подключения</div>
                     </div>
                 </div>
                 
@@ -360,60 +394,35 @@
                     <button class="btn btn-secondary" id="hangup-btn"><i class="fas fa-phone-slash"></i> Завершить звонок</button>
                 </div>
                 
-                <div class="status" id="call-status">Статус: Ожидание действий</div>
-            </div>
-            
-            <div class="youtube-section">
-                <h2 class="section-title"><i class="fab fa-youtube"></i> Совместный просмотр YouTube</h2>
-                <div class="youtube-controls">
-                    <input type="text" id="youtube-url" placeholder="Вставьте ссылку на YouTube видео" style="flex-grow: 1;">
-                    <button class="btn" id="play-youtube-btn"><i class="fas fa-play"></i> Запустить</button>
-                    <button class="btn" id="pause-youtube-btn"><i class="fas fa-pause"></i> Пауза</button>
-                </div>
-                
-                <div class="youtube-player-container">
-                    <iframe id="youtube-player" allowfullscreen></iframe>
-                </div>
+                <div class="status" id="call-status">Статус: Ожидание действий. Для начала подключитесь к собеседнику.</div>
             </div>
         </div>
         
         <div class="features">
             <div class="feature">
-                <i class="fas fa-bolt"></i>
-                <h3>Рабочая аутентификация</h3>
-                <p>Регистрация и вход через Firebase</p>
+                <i class="fas fa-wifi"></i>
+                <h3>Улучшенное соединение</h3>
+                <p>Исправлены проблемы с отображением видео</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-sync-alt"></i>
+                <h3>Статус подключения</h3>
+                <p>Визуализация процесса соединения</p>
             </div>
             <div class="feature">
                 <i class="fas fa-video"></i>
-                <h3>Видеосвязь WebRTC</h3>
-                <p>Реальное видео соединение</p>
+                <h3>Видеосвязь</h3>
+                <p>Стабильное отображение участников</p>
             </div>
             <div class="feature">
-                <i class="fab fa-youtube"></i>
-                <h3>Синхронизация YouTube</h3>
-                <p>Совместный просмотр в реальном времени</p>
+                <i class="fas fa-bug"></i>
+                <h3>Исправления</h3>
+                <p>Устранены проблемы с WebRTC</p>
             </div>
-            <div class="feature">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Безопасность</h3>
-                <p>Защищенные соединения</p>
-            </div>
-        </div>
-        
-        <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> Как использовать:</h3>
-            <ol>
-                <li>Зарегистрируйтесь, указав email и пароль</li>
-                <li>Войдите в систему под своим аккаунтом</li>
-                <li>Включите камеру для видеозвонка</li>
-                <li>Чтобы пригласить друга, сообщите ему ваш ID (email)</li>
-                <li>Для совместного просмотра вставьте ссылку на YouTube видео</li>
-                <li>Нажмите "Запустить" - видео синхронизируется у всех участников</li>
-            </ol>
         </div>
         
         <footer>
-            <p>© 2023 VideoChat Pro - Рабочий видеочат с совместным просмотром</p>
+            <p>© 2023 VideoChat Pro - Рабочий видеочат с исправлениями</p>
             <p>Работает на GitHub Pages | Firebase | WebRTC</p>
         </footer>
     </div>
@@ -445,11 +454,19 @@
             // Элементы DOM
             const authStatus = document.getElementById('auth-status');
             const callStatus = document.getElementById('call-status');
-            const firebaseStatus = document.getElementById('firebase-status');
-            const firebaseStatusText = document.getElementById('firebase-status-text');
             const localVideo = document.getElementById('local-video');
             const remoteVideo = document.getElementById('remote-video');
-            const youtubePlayer = document.getElementById('youtube-player');
+            const localNoVideo = document.getElementById('local-no-video');
+            const remoteNoVideo = document.getElementById('remote-no-video');
+            
+            // Элементы статуса соединения
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const step4 = document.getElementById('step4');
+            const line1 = document.getElementById('line1');
+            const line2 = document.getElementById('line2');
+            const line3 = document.getElementById('line3');
             
             // Кнопки
             const registerBtn = document.getElementById('register-btn');
@@ -458,8 +475,6 @@
             const startVideoBtn = document.getElementById('start-video-btn');
             const stopVideoBtn = document.getElementById('stop-video-btn');
             const hangupBtn = document.getElementById('hangup-btn');
-            const playYoutubeBtn = document.getElementById('play-youtube-btn');
-            const pauseYoutubeBtn = document.getElementById('pause-youtube-btn');
             
             // Состояние приложения
             let localStream = null;
@@ -469,6 +484,7 @@
             let connectedUserId = '';
             let roomId = '';
             let isCaller = false;
+            let remoteCandidates = [];
             
             // Инициализация
             init();
@@ -478,7 +494,41 @@
                 return email.replace(/[.#$@[\]]/g, '_');
             }
             
+            // Функция для сброса статуса соединения
+            function resetConnectionStatus() {
+                step1.classList.remove('active');
+                step2.classList.remove('active');
+                step3.classList.remove('active');
+                step4.classList.remove('active');
+                line1.classList.remove('active');
+                line2.classList.remove('active');
+                line3.classList.remove('active');
+            }
+            
+            // Функция для обновления статуса соединения
+            function updateConnectionStatus(step) {
+                resetConnectionStatus();
+                
+                if (step >= 1) step1.classList.add('active');
+                if (step >= 2) {
+                    step2.classList.add('active');
+                    line1.classList.add('active');
+                }
+                if (step >= 3) {
+                    step3.classList.add('active');
+                    line2.classList.add('active');
+                }
+                if (step >= 4) {
+                    step4.classList.add('active');
+                    line3.classList.add('active');
+                }
+            }
+            
             function init() {
+                // Скрыть видео элементы при запуске
+                localVideo.style.display = 'none';
+                remoteVideo.style.display = 'none';
+                
                 // Проверка поддержки WebRTC
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     showError(authStatus, 'Ваш браузер не поддерживает WebRTC. Пожалуйста, используйте современный браузер.');
@@ -489,11 +539,7 @@
                 const connectedRef = database.ref(".info/connected");
                 connectedRef.on("value", (snap) => {
                     if (snap.val() === true) {
-                        firebaseStatus.className = 'status-dot connected';
-                        firebaseStatusText.textContent = 'Firebase: Подключен';
-                    } else {
-                        firebaseStatus.className = 'status-dot';
-                        firebaseStatusText.textContent = 'Firebase: Не подключен';
+                        showSuccess(callStatus, 'Соединение с Firebase установлено');
                     }
                 });
                 
@@ -518,8 +564,6 @@
                 startVideoBtn.addEventListener('click', startVideo);
                 stopVideoBtn.addEventListener('click', stopVideo);
                 hangupBtn.addEventListener('click', hangup);
-                playYoutubeBtn.addEventListener('click', playYouTube);
-                pauseYoutubeBtn.addEventListener('click', pauseYouTube);
                 
                 // Обновление состояния кнопок
                 updateButtonStates();
@@ -584,6 +628,7 @@
                 roomId = `${makeFirebaseSafe(emails[0])}_${makeFirebaseSafe(emails[1])}`;
                 
                 showSuccess(callStatus, `Подключение к ${connectId}...`);
+                updateConnectionStatus(1);
                 
                 // Проверяем, кто является инициатором вызова
                 isCaller = currentUser.email.localeCompare(connectId) < 0;
@@ -606,8 +651,13 @@
                         audio: true
                     });
                     
+                    // Показать локальное видео
                     localVideo.srcObject = localStream;
+                    localVideo.style.display = 'block';
+                    localNoVideo.style.display = 'none';
+                    
                     showSuccess(callStatus, 'Камера включена');
+                    updateConnectionStatus(2);
                     
                     // Создаем RTCPeerConnection
                     createPeerConnection();
@@ -625,9 +675,6 @@
                     // Настраиваем слушатели для сигналов
                     setupSignalListeners();
                     
-                    // Настраиваем синхронизацию YouTube
-                    setupYouTubeSync();
-                    
                     updateButtonStates();
                 } catch (error) {
                     console.error('Ошибка доступа к камере:', error);
@@ -643,17 +690,29 @@
                         { urls: 'stun:stun1.l.google.com:19302' },
                         { urls: 'stun:stun2.l.google.com:19302' },
                         { urls: 'stun:stun3.l.google.com:19302' },
-                        { urls: 'stun:stun4.l.google.com:19302' }
+                        { urls: 'stun:stun4.l.google.com:19302' },
+                        { 
+                            urls: 'turn:numb.viagenie.ca',
+                            credential: 'muazkh',
+                            username: 'webrtc@live.com'
+                        }
                     ]
                 };
                 
                 peerConnection = new RTCPeerConnection(configuration);
+                remoteCandidates = [];
                 
                 // Обработка удаленного потока
                 peerConnection.ontrack = event => {
                     remoteStream = event.streams[0];
                     remoteVideo.srcObject = remoteStream;
+                    
+                    // Показать удаленное видео
+                    remoteVideo.style.display = 'block';
+                    remoteNoVideo.style.display = 'none';
+                    
                     showSuccess(callStatus, 'Удаленное подключение установлено');
+                    updateConnectionStatus(4);
                 };
                 
                 // Генерация ICE-кандидатов
@@ -669,7 +728,11 @@
                 
                 // Отслеживание изменения состояния соединения
                 peerConnection.oniceconnectionstatechange = () => {
-                    if (peerConnection.iceConnectionState === 'disconnected') {
+                    if (peerConnection.iceConnectionState === 'connected') {
+                        showSuccess(callStatus, 'Соединение установлено');
+                        updateConnectionStatus(3);
+                    }
+                    else if (peerConnection.iceConnectionState === 'disconnected') {
                         showError(callStatus, 'Соединение прервано');
                         hangup();
                     }
@@ -688,6 +751,7 @@
                             sender: currentUser.email,
                             offer: peerConnection.localDescription
                         });
+                        showSuccess(callStatus, 'Предложение отправлено');
                     })
                     .catch(error => {
                         showError(callStatus, `Ошибка создания предложения: ${error}`);
@@ -699,7 +763,7 @@
                 // Слушатель для предложения
                 database.ref(`calls/${roomId}/offer`).on('value', snapshot => {
                     const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email) return;
+                    if (!data || data.sender === currentUser.email || !peerConnection) return;
                     
                     // Принимаем предложение
                     peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer))
@@ -716,6 +780,7 @@
                                 sender: currentUser.email,
                                 answer: peerConnection.localDescription
                             });
+                            showSuccess(callStatus, 'Ответ отправлен');
                         })
                         .catch(error => {
                             showError(callStatus, `Ошибка обработки предложения: ${error}`);
@@ -725,10 +790,19 @@
                 // Слушатель для ответа
                 database.ref(`calls/${roomId}/answer`).on('value', snapshot => {
                     const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email || !peerConnection.remoteDescription) return;
+                    if (!data || data.sender === currentUser.email || !peerConnection || !peerConnection.remoteDescription) return;
                     
                     // Устанавливаем удаленное описание
                     peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer))
+                        .then(() => {
+                            showSuccess(callStatus, 'Ответ обработан');
+                            
+                            // Добавляем все сохраненные кандидаты
+                            remoteCandidates.forEach(candidate => {
+                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                            });
+                            remoteCandidates = [];
+                        })
                         .catch(error => {
                             showError(callStatus, `Ошибка обработки ответа: ${error}`);
                         });
@@ -737,13 +811,20 @@
                 // Слушатель для ICE-кандидатов
                 database.ref(`calls/${roomId}/candidates`).on('child_added', snapshot => {
                     const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email) return;
+                    if (!data || data.sender === currentUser.email || !peerConnection) return;
                     
-                    // Добавляем кандидата
-                    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
-                        .catch(error => {
-                            showError(callStatus, `Ошибка добавления кандидата: ${error}`);
-                        });
+                    const candidate = new RTCIceCandidate(data.candidate);
+                    
+                    if (peerConnection.remoteDescription) {
+                        // Если удаленное описание установлено, добавляем кандидат сразу
+                        peerConnection.addIceCandidate(candidate)
+                            .catch(error => {
+                                console.error('Ошибка добавления кандидата:', error);
+                            });
+                    } else {
+                        // Иначе сохраняем кандидат для последующего добавления
+                        remoteCandidates.push(candidate);
+                    }
                 });
             }
             
@@ -753,6 +834,8 @@
                     localStream.getTracks().forEach(track => track.stop());
                     localStream = null;
                     localVideo.srcObject = null;
+                    localVideo.style.display = 'none';
+                    localNoVideo.style.display = 'flex';
                     showSuccess(callStatus, 'Камера выключена');
                 }
                 updateButtonStates();
@@ -763,6 +846,8 @@
                 stopVideo();
                 if (remoteVideo.srcObject) {
                     remoteVideo.srcObject = null;
+                    remoteVideo.style.display = 'none';
+                    remoteNoVideo.style.display = 'flex';
                 }
                 
                 if (peerConnection) {
@@ -777,66 +862,12 @@
                 }
                 
                 connectedUserId = '';
+                resetConnectionStatus();
                 showSuccess(callStatus, 'Звонок завершен');
                 updateButtonStates();
             }
             
-            // Воспроизведение YouTube видео
-            function playYouTube() {
-                const youtubeUrl = document.getElementById('youtube-url').value.trim();
-                
-                if (!youtubeUrl) {
-                    showError(callStatus, 'Введите ссылку на YouTube видео');
-                    return;
-                }
-                
-                // Извлечение ID видео
-                const videoId = extractYouTubeId(youtubeUrl);
-                
-                if (!videoId) {
-                    showError(callStatus, 'Некорректная ссылка на YouTube видео');
-                    return;
-                }
-                
-                // Установка источника для iframe
-                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                
-                // Синхронизация с другим пользователем
-                if (roomId) {
-                    database.ref(`calls/${roomId}/youtube`).set({
-                        videoId: videoId,
-                        sender: currentUser.email
-                    });
-                }
-                
-                showSuccess(callStatus, `Воспроизведение YouTube видео`);
-            }
-            
-            // Слушатель для синхронизации YouTube
-            function setupYouTubeSync() {
-                database.ref(`calls/${roomId}/youtube`).on('value', snapshot => {
-                    const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email) return;
-                    
-                    const videoId = data.videoId;
-                    youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                    showSuccess(callStatus, `Синхронизировано YouTube видео от ${data.sender}`);
-                });
-            }
-            
-            // Пауза YouTube видео
-            function pauseYouTube() {
-                // В реальном приложении здесь было бы управление через YouTube API
-                showSuccess(callStatus, 'Видео на паузе');
-            }
-            
             // Вспомогательные функции
-            function extractYouTubeId(url) {
-                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-                const match = url.match(regExp);
-                return (match && match[2].length === 11) ? match[2] : null;
-            }
-            
             function showSuccess(element, message) {
                 element.textContent = message;
                 element.className = 'status connected';
@@ -864,11 +895,6 @@
                 // Кнопки подключения
                 connectBtn.disabled = !isLoggedIn || isConnected;
                 document.getElementById('connect-id').disabled = !isLoggedIn || isConnected;
-                
-                // Кнопки YouTube
-                playYoutubeBtn.disabled = !isConnected;
-                pauseYoutubeBtn.disabled = !isConnected;
-                document.getElementById('youtube-url').disabled = !isConnected;
             }
         });
     </script>
