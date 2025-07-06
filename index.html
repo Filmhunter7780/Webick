@@ -294,6 +294,13 @@
             box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
         }
         
+        .config-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -340,7 +347,7 @@
                 
                 <div class="connection-status">
                     <div class="status-dot" id="firebase-status"></div>
-                    <span id="firebase-status-text">Firebase: Не подключен</span>
+                    <span id="firebase-status-text">Firebase: Проверка подключения...</span>
                 </div>
             </div>
             
@@ -380,6 +387,16 @@
             </div>
         </div>
         
+        <div class="config-section">
+            <h2 class="section-title"><i class="fas fa-cog"></i> Конфигурация Firebase</h2>
+            <div class="form-group">
+                <label for="firebase-config">Вставьте конфигурацию Firebase:</label>
+                <textarea id="firebase-config" rows="6" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3); color: white; border: 1px solid #4a9eff;"></textarea>
+            </div>
+            <button class="btn" id="save-config-btn"><i class="fas fa-save"></i> Сохранить конфигурацию</button>
+            <div class="status" id="config-status">Статус: Ожидание конфигурации</div>
+        </div>
+        
         <div class="features">
             <div class="feature">
                 <i class="fas fa-bolt"></i>
@@ -406,6 +423,8 @@
         <div class="instructions">
             <h3><i class="fas fa-info-circle"></i> Как использовать:</h3>
             <ol>
+                <li>Получите конфигурацию Firebase из консоли Firebase (Project settings -> Your apps)</li>
+                <li>Вставьте конфигурацию в поле ввода и нажмите "Сохранить конфигурацию"</li>
                 <li>Зарегистрируйтесь, указав email и пароль</li>
                 <li>Войдите в систему под своим аккаунтом</li>
                 <li>Включите камеру для видеозвонка</li>
@@ -422,22 +441,12 @@
     </div>
 
     <script>
-        // Конфигурация Firebase (замените на свою)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDFepzxO-GRzAyJjpjO8AheEgExST3R9yA",
-            authDomain: "webrtcproject-c4684.firebaseapp.com",
-            projectId: "webrtcproject-c4684",
-            storageBucket: "webrtcproject-c4684.appspot.com",
-            messagingSenderId: "916052149760",
-            appId: "1:916052149760:web:9925a229dfffb45b8d7ae5",
-            measurementId: "G-WCV33E1KXL",
-            databaseURL: "https://webrtcproject-c4684-default-rtdb.firebaseio.com/"
-        };
-
-        // Инициализация Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
+        // Переменная для хранения конфигурации Firebase
+        let firebaseConfig = null;
+        
+        // Переменные для Firebase
+        let auth = null;
+        let database = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             // Элементы DOM
@@ -448,6 +457,7 @@
             const localVideo = document.getElementById('local-video');
             const remoteVideo = document.getElementById('remote-video');
             const youtubePlayer = document.getElementById('youtube-player');
+            const configStatus = document.getElementById('config-status');
             
             // Кнопки
             const registerBtn = document.getElementById('register-btn');
@@ -458,6 +468,7 @@
             const hangupBtn = document.getElementById('hangup-btn');
             const playYoutubeBtn = document.getElementById('play-youtube-btn');
             const pauseYoutubeBtn = document.getElementById('pause-youtube-btn');
+            const saveConfigBtn = document.getElementById('save-config-btn');
             
             // Состояние приложения
             let localStream = null;
@@ -483,31 +494,20 @@
                     return;
                 }
                 
-                // Проверка подключения к Firebase
-                const connectedRef = database.ref(".info/connected");
-                connectedRef.on("value", (snap) => {
-                    if (snap.val() === true) {
-                        firebaseStatus.className = 'status-dot connected';
-                        firebaseStatusText.textContent = 'Firebase: Подключен';
-                    } else {
-                        firebaseStatus.className = 'status-dot';
-                        firebaseStatusText.textContent = 'Firebase: Не подключен';
+                // Проверка наличия сохраненной конфигурации
+                const savedConfig = localStorage.getItem('firebaseConfig');
+                if (savedConfig) {
+                    try {
+                        firebaseConfig = JSON.parse(savedConfig);
+                        initFirebase();
+                        configStatus.textContent = 'Конфигурация загружена из локального хранилища';
+                        configStatus.className = 'status connected';
+                    } catch (e) {
+                        showError(configStatus, 'Ошибка загрузки конфигурации');
                     }
-                });
-                
-                // Мониторинг состояния аутентификации
-                auth.onAuthStateChanged(user => {
-                    if (user) {
-                        currentUser = user;
-                        showSuccess(authStatus, `Вы вошли как: ${user.email}`);
-                        updateButtonStates();
-                    } else {
-                        currentUser = null;
-                        authStatus.textContent = 'Статус: Не авторизован';
-                        authStatus.className = 'status';
-                        updateButtonStates();
-                    }
-                });
+                } else {
+                    showError(configStatus, 'Пожалуйста, введите конфигурацию Firebase');
+                }
                 
                 // Установка обработчиков событий
                 registerBtn.addEventListener('click', register);
@@ -518,9 +518,65 @@
                 hangupBtn.addEventListener('click', hangup);
                 playYoutubeBtn.addEventListener('click', playYouTube);
                 pauseYoutubeBtn.addEventListener('click', pauseYouTube);
+                saveConfigBtn.addEventListener('click', saveConfig);
                 
                 // Обновление состояния кнопок
                 updateButtonStates();
+            }
+            
+            // Инициализация Firebase
+            function initFirebase() {
+                try {
+                    // Инициализация Firebase
+                    const app = firebase.initializeApp(firebaseConfig);
+                    auth = firebase.auth(app);
+                    database = firebase.database(app);
+                    
+                    // Проверка подключения к Firebase
+                    const connectedRef = database.ref(".info/connected");
+                    connectedRef.on("value", (snap) => {
+                        if (snap.val() === true) {
+                            firebaseStatus.className = 'status-dot connected';
+                            firebaseStatusText.textContent = 'Firebase: Подключен';
+                        } else {
+                            firebaseStatus.className = 'status-dot';
+                            firebaseStatusText.textContent = 'Firebase: Не подключен';
+                        }
+                    });
+                    
+                    // Мониторинг состояния аутентификации
+                    auth.onAuthStateChanged(user => {
+                        if (user) {
+                            currentUser = user;
+                            showSuccess(authStatus, `Вы вошли как: ${user.email}`);
+                            updateButtonStates();
+                        } else {
+                            currentUser = null;
+                            authStatus.textContent = 'Статус: Не авторизован';
+                            authStatus.className = 'status';
+                            updateButtonStates();
+                        }
+                    });
+                    
+                    showSuccess(configStatus, 'Firebase успешно инициализирован');
+                } catch (error) {
+                    console.error('Ошибка инициализации Firebase:', error);
+                    showError(configStatus, `Ошибка инициализации Firebase: ${error.message}`);
+                }
+            }
+            
+            // Сохранение конфигурации Firebase
+            function saveConfig() {
+                try {
+                    const configText = document.getElementById('firebase-config').value;
+                    firebaseConfig = JSON.parse(configText);
+                    localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
+                    initFirebase();
+                    showSuccess(configStatus, 'Конфигурация сохранена и применена');
+                } catch (error) {
+                    console.error('Ошибка сохранения конфигурации:', error);
+                    showError(configStatus, `Ошибка: ${error.message}`);
+                }
             }
             
             // Регистрация нового пользователя
@@ -597,7 +653,10 @@
                     
                     // Получение видеопотока
                     localStream = await navigator.mediaDevices.getUserMedia({
-                        video: true,
+                        video: {
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        },
                         audio: true
                     });
                     
@@ -636,7 +695,9 @@
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
                         { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' }
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:stun3.l.google.com:19302' },
+                        { urls: 'stun:stun4.l.google.com:19302' }
                     ]
                 };
                 
@@ -663,6 +724,7 @@
                 // Отслеживание изменения состояния соединения
                 peerConnection.oniceconnectionstatechange = () => {
                     if (peerConnection.iceConnectionState === 'disconnected') {
+                        showError(callStatus, 'Соединение прервано');
                         hangup();
                     }
                 };
