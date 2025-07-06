@@ -471,6 +471,11 @@
             // Инициализация
             init();
             
+            // Функция для создания безопасных путей Firebase
+            function makeFirebaseSafe(email) {
+                return email.replace(/[.#$@[\]]/g, '_');
+            }
+            
             function init() {
                 // Проверка поддержки WebRTC
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -573,7 +578,9 @@
                 connectedUserId = connectId;
                 
                 // Создаем уникальный ID комнаты на основе ID пользователей
-                roomId = [currentUser.email, connectId].sort().join('_');
+                const emails = [currentUser.email, connectId].sort();
+                roomId = `${makeFirebaseSafe(emails[0])}_${makeFirebaseSafe(emails[1])}`;
+                
                 showSuccess(callStatus, `Подключение к ${connectId}...`);
                 
                 // Проверяем, кто является инициатором вызова
@@ -612,6 +619,9 @@
                     
                     // Настраиваем слушатели для сигналов
                     setupSignalListeners();
+                    
+                    // Настраиваем синхронизацию YouTube
+                    setupYouTubeSync();
                     
                     updateButtonStates();
                 } catch (error) {
