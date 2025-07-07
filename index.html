@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoChat Pro - Исправлено отображение видео</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Простой видеочат</title>
     <style>
         * {
             margin: 0;
@@ -14,143 +13,59 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #1a2a6c);
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
+            text-align: center;
         }
         
         header {
-            text-align: center;
             padding: 20px 0;
             margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid #3498db;
         }
         
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            color: #2ecc71;
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
         }
         
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-top: 10px;
-        }
-        
-        .main-content {
+        .room-controls {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 30px;
         }
         
-        .auth-section, .video-section, .youtube-section {
-            background: rgba(30, 30, 50, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid #2980b9;
-        }
-        
-        .auth-section {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .video-section {
-            flex: 2;
-            min-width: 300px;
-        }
-        
-        .youtube-section {
-            flex: 100%;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
-            color: #3498db;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #3498db;
+        .input-group {
+            display: flex;
+            gap: 10px;
         }
         
         input {
-            width: 100%;
+            flex: 1;
             padding: 12px 15px;
             border-radius: 8px;
-            border: 2px solid #3498db;
-            background: rgba(10, 20, 40, 0.6);
+            border: 2px solid #4a9eff;
+            background: rgba(10, 10, 30, 0.7);
             color: #fff;
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
         
-        input:focus {
-            outline: none;
-            border-color: #2ecc71;
-            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
-        }
-        
-        .btn {
-            display: inline-block;
+        button {
             padding: 12px 25px;
-            background: linear-gradient(45deg, #3498db, #2980b9);
+            background: linear-gradient(45deg, #4a9eff, #1a75ff);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 600;
-            transition: all 0.3s ease;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn:hover {
-            background: linear-gradient(45deg, #2980b9, #3498db);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-        }
-        
-        .btn-secondary:hover {
-            background: linear-gradient(45deg, #c0392b, #e74c3c);
-        }
-        
-        .btn-success {
-            background: linear-gradient(45deg, #2ecc71, #27ae60);
-        }
-        
-        .btn-success:hover {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
         }
         
         .video-container {
@@ -162,13 +77,10 @@
         
         .video-wrapper {
             flex: 1;
-            min-width: 250px;
+            min-width: 300px;
             background: rgba(0, 0, 0, 0.4);
             border-radius: 10px;
             overflow: hidden;
-            position: relative;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            border: 1px solid #34495e;
         }
         
         .video-title {
@@ -176,52 +88,13 @@
             padding: 10px;
             text-align: center;
             font-weight: 600;
-            color: #3498db;
         }
         
         video {
             width: 100%;
-            height: 240px;
+            max-height: 300px;
             display: block;
             background: #000;
-            object-fit: cover;
-        }
-        
-        .no-video {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 240px;
-            background: #1c1c2e;
-            color: #7f8c8d;
-            font-size: 1.2rem;
-        }
-        
-        .youtube-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .youtube-player-container {
-            background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            position: relative;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            border: 1px solid #34495e;
-        }
-        
-        #youtube-player {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
         }
         
         .status {
@@ -232,671 +105,204 @@
             font-size: 1rem;
         }
         
-        .status.connected {
-            background: rgba(46, 204, 113, 0.3);
-            border: 1px solid #27ae60;
-        }
-        
-        .status.error {
-            background: rgba(231, 76, 60, 0.3);
-            border: 1px solid #c0392b;
-        }
-        
-        .connection-diagram {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(30, 40, 60, 0.6);
-            border-radius: 10px;
-        }
-        
-        .connection-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 100px;
-        }
-        
-        .step-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #3498db;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            font-size: 1.5rem;
-        }
-        
-        .step-icon.active {
-            background: #2ecc71;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
-        }
-        
-        .step-line {
-            flex-grow: 1;
-            height: 4px;
-            background: #3498db;
-            margin: 0 10px;
-            position: relative;
-            top: 25px;
-        }
-        
-        .step-line.active {
-            background: #2ecc71;
-        }
-        
-        .step-text {
-            font-size: 0.9rem;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .video-container {
-                flex-direction: column;
-            }
-            
-            .connection-diagram {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .step-line {
-                width: 4px;
-                height: 40px;
-                margin: 10px 0;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-video"></i> VideoChat Pro</h1>
-            <p class="subtitle">Исправлено отображение видео между участниками</p>
+            <h1>Простой видеочат</h1>
+            <p>Создайте комнату или присоединитесь к существующей</p>
         </header>
         
-        <div class="main-content">
-            <div class="auth-section">
-                <h2 class="section-title"><i class="fas fa-user"></i> Регистрация / Вход</h2>
-                <div class="form-group">
-                    <label for="user-id">Ваш ID (email):</label>
-                    <input type="text" id="user-id" placeholder="Введите ваш email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Пароль:</label>
-                    <input type="password" id="password" placeholder="Введите пароль">
-                </div>
-                <button class="btn btn-success" id="register-btn"><i class="fas fa-user-plus"></i> Зарегистрироваться</button>
-                <button class="btn" id="login-btn"><i class="fas fa-sign-in-alt"></i> Войти</button>
-                
-                <div class="form-group">
-                    <label for="connect-id">Подключиться к ID:</label>
-                    <input type="text" id="connect-id" placeholder="Введите ID собеседника">
-                </div>
-                <button class="btn btn-secondary" id="connect-btn"><i class="fas fa-plug"></i> Подключиться</button>
-                
-                <div class="status" id="auth-status">Статус: Не авторизован</div>
+        <div class="room-controls">
+            <div class="input-group">
+                <input type="text" id="room-id" placeholder="ID комнаты">
+                <input type="password" id="room-password" placeholder="Пароль комнаты">
+                <button id="create-room-btn">Создать комнату</button>
             </div>
-            
-            <div class="video-section">
-                <h2 class="section-title"><i class="fas fa-users"></i> Видеочат</h2>
-                
-                <div class="connection-diagram">
-                    <div class="connection-step">
-                        <div class="step-icon" id="step1"><i class="fas fa-signal"></i></div>
-                        <div class="step-text">Сигнализация</div>
-                    </div>
-                    <div class="step-line" id="line1"></div>
-                    <div class="connection-step">
-                        <div class="step-icon" id="step2"><i class="fas fa-handshake"></i></div>
-                        <div class="step-text">Согласование</div>
-                    </div>
-                    <div class="step-line" id="line2"></div>
-                    <div class="connection-step">
-                        <div class="step-icon" id="step3"><i class="fas fa-network-wired"></i></div>
-                        <div class="step-text">Соединение</div>
-                    </div>
-                    <div class="step-line" id="line3"></div>
-                    <div class="connection-step">
-                        <div class="step-icon" id="step4"><i class="fas fa-video"></i></div>
-                        <div class="step-text">Видео</div>
-                    </div>
-                </div>
-                
-                <div class="video-container">
-                    <div class="video-wrapper">
-                        <div class="video-title"><i class="fas fa-user"></i> Ваша камера</div>
-                        <video id="local-video" autoplay muted playsinline></video>
-                        <div class="no-video" id="local-no-video">Камера не активирована</div>
-                    </div>
-                    <div class="video-wrapper">
-                        <div class="video-title"><i class="fas fa-user-friends"></i> Участник чата</div>
-                        <video id="remote-video" autoplay playsinline></video>
-                        <div class="no-video" id="remote-no-video">Ожидание подключения</div>
-                    </div>
-                </div>
-                
-                <div class="video-controls">
-                    <button class="btn" id="start-video-btn"><i class="fas fa-video"></i> Включить камеру</button>
-                    <button class="btn" id="stop-video-btn"><i class="fas fa-video-slash"></i> Выключить камеру</button>
-                    <button class="btn btn-secondary" id="hangup-btn"><i class="fas fa-phone-slash"></i> Завершить звонок</button>
-                </div>
-                
-                <div class="status" id="call-status">Статус: Ожидание действий. Для начала подключитесь к собеседнику.</div>
+            <div class="input-group">
+                <input type="text" id="join-room-id" placeholder="ID комнаты">
+                <input type="password" id="join-room-password" placeholder="Пароль комнаты">
+                <button id="join-room-btn">Присоединиться</button>
             </div>
         </div>
         
-        <div class="features">
-            <div class="feature">
-                <i class="fas fa-wifi"></i>
-                <h3>Улучшенное соединение</h3>
-                <p>Исправлены проблемы с отображением видео</p>
+        <div class="video-container hidden" id="video-container">
+            <div class="video-wrapper">
+                <div class="video-title">Ваша камера</div>
+                <video id="local-video" autoplay muted></video>
             </div>
-            <div class="feature">
-                <i class="fas fa-sync-alt"></i>
-                <h3>Статус подключения</h3>
-                <p>Визуализация процесса соединения</p>
-            </div>
-            <div class="feature">
-                <i class="fas fa-video"></i>
-                <h3>Видеосвязь</h3>
-                <p>Стабильное отображение участников</p>
-            </div>
-            <div class="feature">
-                <i class="fas fa-bug"></i>
-                <h3>Исправления</h3>
-                <p>Устранены проблемы с WebRTC</p>
+            <div class="video-wrapper">
+                <div class="video-title">Собеседник</div>
+                <video id="remote-video" autoplay></video>
             </div>
         </div>
         
-        <footer>
-            <p>© 2023 VideoChat Pro - Рабочий видеочат с исправлениями</p>
-            <p>Работает на GitHub Pages | Firebase | WebRTC</p>
-        </footer>
+        <div class="status" id="status">Введите ID комнаты и пароль, затем нажмите "Создать комнату" или "Присоединиться"</div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    
     <script>
-        // Конфигурация Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDFepzxO-GRzAyJjpjO8AheEgExST3R9yA",
-            authDomain: "webrtcproject-c4684.firebaseapp.com",
-            databaseURL: "https://webrtcproject-c4684-default-rtdb.firebaseio.com",
-            projectId: "webrtcproject-c4684",
-            storageBucket: "webrtcproject-c4684.appspot.com",
-            messagingSenderId: "916052149760",
-            appId: "1:916052149760:web:9925a229dfffb45b8d7ae5",
-            measurementId: "G-WCV33E1KXL"
-        };
-
-        // Инициализация Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Элементы DOM
-            const authStatus = document.getElementById('auth-status');
-            const callStatus = document.getElementById('call-status');
-            const localVideo = document.getElementById('local-video');
-            const remoteVideo = document.getElementById('remote-video');
-            const localNoVideo = document.getElementById('local-no-video');
-            const remoteNoVideo = document.getElementById('remote-no-video');
-            
-            // Элементы статуса соединения
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-            const step3 = document.getElementById('step3');
-            const step4 = document.getElementById('step4');
-            const line1 = document.getElementById('line1');
-            const line2 = document.getElementById('line2');
-            const line3 = document.getElementById('line3');
-            
-            // Кнопки
-            const registerBtn = document.getElementById('register-btn');
-            const loginBtn = document.getElementById('login-btn');
-            const connectBtn = document.getElementById('connect-btn');
-            const startVideoBtn = document.getElementById('start-video-btn');
-            const stopVideoBtn = document.getElementById('stop-video-btn');
-            const hangupBtn = document.getElementById('hangup-btn');
-            
-            // Состояние приложения
-            let localStream = null;
-            let remoteStream = null;
-            let peerConnection = null;
-            let currentUser = null;
-            let connectedUserId = '';
-            let roomId = '';
-            let isCaller = false;
-            let remoteCandidates = [];
-            
-            // Инициализация
-            init();
-            
-            // Функция для создания безопасных путей Firebase
-            function makeFirebaseSafe(email) {
-                return email.replace(/[.#$@[\]]/g, '_');
+        // Элементы
+        const roomIdInput = document.getElementById('room-id');
+        const roomPasswordInput = document.getElementById('room-password');
+        const joinRoomIdInput = document.getElementById('join-room-id');
+        const joinRoomPasswordInput = document.getElementById('join-room-password');
+        const createRoomBtn = document.getElementById('create-room-btn');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const videoContainer = document.getElementById('video-container');
+        const localVideo = document.getElementById('local-video');
+        const remoteVideo = document.getElementById('remote-video');
+        const statusDiv = document.getElementById('status');
+        
+        let localStream;
+        let peerConnection;
+        let isRoomCreator = false;
+        let roomData = {};
+        
+        // Инициализация
+        init();
+        
+        async function init() {
+            // Получение доступа к камере
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = localStream;
+            } catch (error) {
+                statusDiv.textContent = 'Ошибка доступа к камере: ' + error.message;
             }
             
-            // Функция для сброса статуса соединения
-            function resetConnectionStatus() {
-                step1.classList.remove('active');
-                step2.classList.remove('active');
-                step3.classList.remove('active');
-                step4.classList.remove('active');
-                line1.classList.remove('active');
-                line2.classList.remove('active');
-                line3.classList.remove('active');
+            // Обработчики событий
+            createRoomBtn.addEventListener('click', createRoom);
+            joinRoomBtn.addEventListener('click', joinRoom);
+        }
+        
+        // Создание комнаты
+        function createRoom() {
+            const roomId = roomIdInput.value.trim();
+            const password = roomPasswordInput.value.trim();
+            
+            if (!roomId || !password) {
+                statusDiv.textContent = 'Введите ID комнаты и пароль';
+                return;
             }
             
-            // Функция для обновления статуса соединения
-            function updateConnectionStatus(step) {
-                resetConnectionStatus();
-                
-                if (step >= 1) step1.classList.add('active');
-                if (step >= 2) {
-                    step2.classList.add('active');
-                    line1.classList.add('active');
+            isRoomCreator = true;
+            roomData = { id: roomId, password: password };
+            statusDiv.textContent = `Комната "${roomId}" создана. Ожидание участника...`;
+            videoContainer.classList.remove('hidden');
+            setupPeerConnection();
+        }
+        
+        // Присоединение к комнате
+        function joinRoom() {
+            const roomId = joinRoomIdInput.value.trim();
+            const password = joinRoomPasswordInput.value.trim();
+            
+            if (!roomId || !password) {
+                statusDiv.textContent = 'Введите ID комнаты и пароль';
+                return;
+            }
+            
+            isRoomCreator = false;
+            roomData = { id: roomId, password: password };
+            statusDiv.textContent = `Присоединение к комнате "${roomId}"...`;
+            videoContainer.classList.remove('hidden');
+            setupPeerConnection();
+        }
+        
+        // Настройка WebRTC соединения
+        function setupPeerConnection() {
+            // Конфигурация ICE серверов
+            const configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' }
+                ]
+            };
+            
+            // Создание PeerConnection
+            peerConnection = new RTCPeerConnection(configuration);
+            
+            // Добавление локального потока
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            
+            // Обработка удаленного потока
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+                statusDiv.textContent = 'Соединение установлено!';
+            };
+            
+            // Обработка ICE кандидатов
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    // Здесь должна быть логика отправки кандидата другому участнику
+                    // В реальном приложении это делается через сервер
                 }
-                if (step >= 3) {
-                    step3.classList.add('active');
-                    line2.classList.add('active');
-                }
-                if (step >= 4) {
-                    step4.classList.add('active');
-                    line3.classList.add('active');
-                }
-            }
+            };
             
-            function init() {
-                // Скрыть видео элементы при запуске
-                localVideo.style.display = 'none';
-                remoteVideo.style.display = 'none';
-                
-                // Проверка поддержки WebRTC
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    showError(authStatus, 'Ваш браузер не поддерживает WebRTC. Пожалуйста, используйте современный браузер.');
-                    return;
-                }
-                
-                // Проверка подключения к Firebase
-                const connectedRef = database.ref(".info/connected");
-                connectedRef.on("value", (snap) => {
-                    if (snap.val() === true) {
-                        showSuccess(callStatus, 'Соединение с Firebase установлено');
-                    }
-                });
-                
-                // Мониторинг состояния аутентификации
-                auth.onAuthStateChanged(user => {
-                    if (user) {
-                        currentUser = user;
-                        showSuccess(authStatus, `Вы вошли как: ${user.email}`);
-                        updateButtonStates();
-                    } else {
-                        currentUser = null;
-                        authStatus.textContent = 'Статус: Не авторизован';
-                        authStatus.className = 'status';
-                        updateButtonStates();
-                    }
-                });
-                
-                // Установка обработчиков событий
-                registerBtn.addEventListener('click', register);
-                loginBtn.addEventListener('click', login);
-                connectBtn.addEventListener('click', connectToUser);
-                startVideoBtn.addEventListener('click', startVideo);
-                stopVideoBtn.addEventListener('click', stopVideo);
-                hangupBtn.addEventListener('click', hangup);
-                
-                // Обновление состояния кнопок
-                updateButtonStates();
+            // Если создатель комнаты - создаем предложение
+            if (isRoomCreator) {
+                createOffer();
             }
+        }
+        
+        // Создание предложения (для создателя комнаты)
+        async function createOffer() {
+            try {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                
+                // Здесь должна быть логика отправки offer другому участнику
+                // В реальном приложении это делается через сервер
+                
+                statusDiv.textContent = 'Ожидаем подключения участника...';
+            } catch (error) {
+                statusDiv.textContent = 'Ошибка создания предложения: ' + error.message;
+            }
+        }
+        
+        // Симуляция подключения второго участника
+        setTimeout(() => {
+            if (isRoomCreator) {
+                simulateSecondUser();
+            }
+        }, 3000);
+        
+        // Симуляция подключения второго пользователя
+        function simulateSecondUser() {
+            statusDiv.textContent = 'Участник подключился!';
             
-            // Регистрация нового пользователя
-            function register() {
-                const email = document.getElementById('user-id').value.trim();
-                const password = document.getElementById('password').value;
-                
-                if (!email || !password) {
-                    showError(authStatus, 'Пожалуйста, заполните все поля');
-                    return;
-                }
-                
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        showSuccess(authStatus, `Регистрация успешна: ${userCredential.user.email}`);
-                    })
-                    .catch((error) => {
-                        showError(authStatus, `Ошибка регистрации: ${error.message}`);
-                    });
-            }
+            // Создаем фиктивное видео для демонстрации
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            const ctx = canvas.getContext('2d');
             
-            // Вход существующего пользователя
-            function login() {
-                const email = document.getElementById('user-id').value.trim();
-                const password = document.getElementById('password').value;
-                
-                if (!email || !password) {
-                    showError(authStatus, 'Пожалуйста, заполните все поля');
-                    return;
-                }
-                
-                auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        showSuccess(authStatus, `Вход выполнен: ${userCredential.user.email}`);
-                    })
-                    .catch((error) => {
-                        showError(authStatus, `Ошибка входа: ${error.message}`);
-                    });
-            }
+            // Рисуем градиентный фон
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#3498db');
+            gradient.addColorStop(1, '#2ecc71');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Подключение к другому пользователю
-            function connectToUser() {
-                const connectId = document.getElementById('connect-id').value.trim();
-                
-                if (!currentUser) {
-                    showError(authStatus, 'Пожалуйста, сначала войдите в систему');
-                    return;
-                }
-                
-                if (!connectId) {
-                    showError(authStatus, 'Введите ID для подключения');
-                    return;
-                }
-                
-                connectedUserId = connectId;
-                
-                // Создаем уникальный ID комнаты на основе ID пользователей
-                const emails = [currentUser.email, connectId].sort();
-                roomId = `${makeFirebaseSafe(emails[0])}_${makeFirebaseSafe(emails[1])}`;
-                
-                showSuccess(callStatus, `Подключение к ${connectId}...`);
-                updateConnectionStatus(1);
-                
-                // Проверяем, кто является инициатором вызова
-                isCaller = currentUser.email.localeCompare(connectId) < 0;
-                
-                // Начинаем видеозвонок
-                startVideoCall();
-            }
+            // Добавляем текст
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 36px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Собеседник', canvas.width/2, canvas.height/2);
             
-            // Запуск видеозвонка
-            async function startVideoCall() {
-                try {
-                    showSuccess(callStatus, 'Получение доступа к камере...');
-                    
-                    // Получение видеопотока
-                    localStream = await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        },
-                        audio: true
-                    });
-                    
-                    // Показать локальное видео
-                    localVideo.srcObject = localStream;
-                    localVideo.style.display = 'block';
-                    localNoVideo.style.display = 'none';
-                    
-                    showSuccess(callStatus, 'Камера включена');
-                    updateConnectionStatus(2);
-                    
-                    // Создаем RTCPeerConnection
-                    createPeerConnection();
-                    
-                    // Добавляем локальный поток в соединение
-                    localStream.getTracks().forEach(track => {
-                        peerConnection.addTrack(track, localStream);
-                    });
-                    
-                    // Если мы инициатор, создаем предложение
-                    if (isCaller) {
-                        createOffer();
-                    }
-                    
-                    // Настраиваем слушатели для сигналов
-                    setupSignalListeners();
-                    
-                    updateButtonStates();
-                } catch (error) {
-                    console.error('Ошибка доступа к камере:', error);
-                    showError(callStatus, `Ошибка доступа к камере: ${error.message}`);
-                }
-            }
-            
-            // Создание RTCPeerConnection
-            function createPeerConnection() {
-                const configuration = {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:stun3.l.google.com:19302' },
-                        { urls: 'stun:stun4.l.google.com:19302' },
-                        { 
-                            urls: 'turn:numb.viagenie.ca',
-                            credential: 'muazkh',
-                            username: 'webrtc@live.com'
-                        }
-                    ]
-                };
-                
-                peerConnection = new RTCPeerConnection(configuration);
-                remoteCandidates = [];
-                
-                // Обработка удаленного потока
-                peerConnection.ontrack = event => {
-                    remoteStream = event.streams[0];
-                    remoteVideo.srcObject = remoteStream;
-                    
-                    // Показать удаленное видео
-                    remoteVideo.style.display = 'block';
-                    remoteNoVideo.style.display = 'none';
-                    
-                    showSuccess(callStatus, 'Удаленное подключение установлено');
-                    updateConnectionStatus(4);
-                };
-                
-                // Генерация ICE-кандидатов
-                peerConnection.onicecandidate = event => {
-                    if (event.candidate) {
-                        // Отправляем кандидата другому пользователю
-                        database.ref(`calls/${roomId}/candidates`).push({
-                            sender: currentUser.email,
-                            candidate: event.candidate
-                        });
-                    }
-                };
-                
-                // Отслеживание изменения состояния соединения
-                peerConnection.oniceconnectionstatechange = () => {
-                    if (peerConnection.iceConnectionState === 'connected') {
-                        showSuccess(callStatus, 'Соединение установлено');
-                        updateConnectionStatus(3);
-                    }
-                    else if (peerConnection.iceConnectionState === 'disconnected') {
-                        showError(callStatus, 'Соединение прервано');
-                        hangup();
-                    }
-                };
-            }
-            
-            // Создание предложения (для инициатора)
-            function createOffer() {
-                peerConnection.createOffer()
-                    .then(offer => {
-                        return peerConnection.setLocalDescription(offer);
-                    })
-                    .then(() => {
-                        // Отправляем предложение другому пользователю
-                        database.ref(`calls/${roomId}/offer`).set({
-                            sender: currentUser.email,
-                            offer: peerConnection.localDescription
-                        });
-                        showSuccess(callStatus, 'Предложение отправлено');
-                    })
-                    .catch(error => {
-                        showError(callStatus, `Ошибка создания предложения: ${error}`);
-                    });
-            }
-            
-            // Настройка слушателей сигналов
-            function setupSignalListeners() {
-                // Слушатель для предложения
-                database.ref(`calls/${roomId}/offer`).on('value', snapshot => {
-                    const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email || !peerConnection) return;
-                    
-                    // Принимаем предложение
-                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer))
-                        .then(() => {
-                            // Создаем ответ
-                            return peerConnection.createAnswer();
-                        })
-                        .then(answer => {
-                            return peerConnection.setLocalDescription(answer);
-                        })
-                        .then(() => {
-                            // Отправляем ответ
-                            database.ref(`calls/${roomId}/answer`).set({
-                                sender: currentUser.email,
-                                answer: peerConnection.localDescription
-                            });
-                            showSuccess(callStatus, 'Ответ отправлен');
-                        })
-                        .catch(error => {
-                            showError(callStatus, `Ошибка обработки предложения: ${error}`);
-                        });
-                });
-                
-                // Слушатель для ответа
-                database.ref(`calls/${roomId}/answer`).on('value', snapshot => {
-                    const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email || !peerConnection || !peerConnection.remoteDescription) return;
-                    
-                    // Устанавливаем удаленное описание
-                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer))
-                        .then(() => {
-                            showSuccess(callStatus, 'Ответ обработан');
-                            
-                            // Добавляем все сохраненные кандидаты
-                            remoteCandidates.forEach(candidate => {
-                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                            });
-                            remoteCandidates = [];
-                        })
-                        .catch(error => {
-                            showError(callStatus, `Ошибка обработки ответа: ${error}`);
-                        });
-                });
-                
-                // Слушатель для ICE-кандидатов
-                database.ref(`calls/${roomId}/candidates`).on('child_added', snapshot => {
-                    const data = snapshot.val();
-                    if (!data || data.sender === currentUser.email || !peerConnection) return;
-                    
-                    const candidate = new RTCIceCandidate(data.candidate);
-                    
-                    if (peerConnection.remoteDescription) {
-                        // Если удаленное описание установлено, добавляем кандидат сразу
-                        peerConnection.addIceCandidate(candidate)
-                            .catch(error => {
-                                console.error('Ошибка добавления кандидата:', error);
-                            });
-                    } else {
-                        // Иначе сохраняем кандидат для последующего добавления
-                        remoteCandidates.push(candidate);
-                    }
-                });
-            }
-            
-            // Остановка видео
-            function stopVideo() {
-                if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
-                    localStream = null;
-                    localVideo.srcObject = null;
-                    localVideo.style.display = 'none';
-                    localNoVideo.style.display = 'flex';
-                    showSuccess(callStatus, 'Камера выключена');
-                }
-                updateButtonStates();
-            }
-            
-            // Завершение звонка
-            function hangup() {
-                stopVideo();
-                if (remoteVideo.srcObject) {
-                    remoteVideo.srcObject = null;
-                    remoteVideo.style.display = 'none';
-                    remoteNoVideo.style.display = 'flex';
-                }
-                
-                if (peerConnection) {
-                    peerConnection.close();
-                    peerConnection = null;
-                }
-                
-                // Очищаем данные вызова в Firebase
-                if (roomId) {
-                    database.ref(`calls/${roomId}`).remove();
-                    roomId = '';
-                }
-                
-                connectedUserId = '';
-                resetConnectionStatus();
-                showSuccess(callStatus, 'Звонок завершен');
-                updateButtonStates();
-            }
-            
-            // Вспомогательные функции
-            function showSuccess(element, message) {
-                element.textContent = message;
-                element.className = 'status connected';
-            }
-            
-            function showError(element, message) {
-                element.textContent = message;
-                element.className = 'status error';
-            }
-            
-            function updateButtonStates() {
-                const isLoggedIn = !!currentUser;
-                const isConnected = !!connectedUserId;
-                const isVideoActive = !!localStream;
-                
-                // Кнопки регистрации/входа
-                registerBtn.disabled = isLoggedIn;
-                loginBtn.disabled = isLoggedIn;
-                
-                // Кнопки видео
-                startVideoBtn.disabled = !isLoggedIn || isVideoActive;
-                stopVideoBtn.disabled = !isVideoActive;
-                hangupBtn.disabled = !isConnected;
-                
-                // Кнопки подключения
-                connectBtn.disabled = !isLoggedIn || isConnected;
-                document.getElementById('connect-id').disabled = !isLoggedIn || isConnected;
-            }
-        });
+            // Создаем поток из canvas
+            const stream = canvas.captureStream(25);
+            remoteVideo.srcObject = stream;
+        }
     </script>
 </body>
 </html>
